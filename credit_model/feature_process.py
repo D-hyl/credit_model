@@ -139,8 +139,7 @@ def calulate_iv(df,var,global_bt,global_gt):
     return groupdetail
 
 
-def calculate_iv_split(df,var,split_point,global_bt,global_gt):
-    """
+def calculate_iv_split(df,var,split_point,global_bt,global_gt):    """
     calculate the iv value with the specified split point
     note:
         the dataset should have variables:'target' which to be encapsulated if have time
@@ -187,7 +186,7 @@ def binning_data_split(df,var,global_bt,global_gt,min_sample,way=3,alpha=0.01,bi
         split=[df.loc[split_descend_idx[start_idx+(i+1)*int(df.shape[0]/bin)-1],var] for i in range(bin-1)]
         split = check_point(df, var, split, min_sample)
         split.sort()
-        ivi=calculate_iv_split(df,var,split,global_bt,global_gt)d
+        ivi=calculate_iv_split(df,var,split,global_bt,global_gt)
         iv_var.split_list = split
         iv_var.iv=ivi
         return node(var_name=var,split_point=split,iv=ivi)
