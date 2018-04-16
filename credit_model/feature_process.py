@@ -351,12 +351,8 @@ def proc_woe_discrete(df,var,global_bt,global_gt,min_sample,way,alpha,bin):
     for var_value in np.unique(df[var]):
         # Here come with a '==',in case type error you must do Nan filling process firstly
         df_temp = df[df[var] == var_value]
-        bad_cnt=sum(df_temp['target'])
-        good_cnt=df_temp.shape[0]-bad_cnt
-        lbr = (bad_cnt+ 0.0001)*1.0/global_bt
-        lgr = (good_cnt+ 0.0001)*1.0/global_gt
-        woei = np.log(lbr/lgr)
-        ivi = (lbr-lgr)*woei
+        gd = calulate_iv(df_temp,var,global_bt,global_gt)
+        woei, ivi = gd['woei'],gd['ivi']
         div.origin_value.append(var_value)
         div.woe_before.append(woei)
         rdict[var_value] = woei
