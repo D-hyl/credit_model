@@ -20,7 +20,7 @@ class config:
         self.global_gt = None
 
     def load_file(self,config_path,data_path=False):
-        self.config = pd.read_csv(config_path)
+        self.config = pd.read_csv(config_path,encoding='gbk')
         # specify variable dtypes
         self.variable_type = self.config[['var_name', 'var_dtype']]
         self.variable_type = self.variable_type.rename(columns={'var_name': 'v_name', 'var_dtype': 'v_type'})
