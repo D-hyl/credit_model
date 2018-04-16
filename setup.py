@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='credit_model',
-    version=1.0,
+    version='1.0',
     description=(
         'create a credit card by logistic'
     ),
@@ -11,8 +11,8 @@ setup(
     author_email='1343882010@qq.com',
     maintainer='hyl',
     maintainer_email='1343882010@qq.com',
-    license='BSD License',
-    packages=find_packages(),
+    license='MIT',
+    packages=['credit_model'],
     platforms=["all"],
     url='https://github.com/D-hyl/credit_model',
     classifiers=[
