@@ -207,8 +207,7 @@ def binning_data_split(df,var,global_bt,global_gt,min_sample,way=3,alpha=0.01,bi
         bestSplit_point = []
     
         for point in percent_value[0:percent_value.__len__()-1]:
-            if set(df[df[var] > point]['target']).__len__() == 1 or set(df[df[var] <= point]['target']).__len__() == 1 
-            or df[df[var] > point].shape[0] < min_sample or df[df[var] <= point].shape[0] < min_sample :
+            if set(df[df[var] > point]['target']).__len__() == 1 or set(df[df[var] <= point]['target']).__len__() == 1 or df[df[var] > point].shape[0] < min_sample or df[df[var] <= point].shape[0] < min_sample :
                 continue
             woel, woer, iv, dataset_l, dataset_r, ivl, ivr = calculate_iv_split(df,var,point,global_bt,global_gt)
             if iv > bestSplit_iv:
