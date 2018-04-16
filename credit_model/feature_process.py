@@ -472,7 +472,7 @@ def process_woe_trans(in_data_path=None,rst_path=None,out_path=None,config_path=
     for r in rst:
         if r.var_name in list(cfg.dataset_train.columns):
             cfg.dataset_train[r.var_name] = woe_trans(cfg.dataset_train[r.var_name], r)
-    cfg.dataset_train.to_csv(out_path)
+    cfg.dataset_train.to_csv(out_path,index=False)
     
 ######################################填充缺失值 
 def fill_na(dataset,candidate_var_list,discrete_var_list,discrete_filler='missing',way='constant',continuous_filler=-1):
