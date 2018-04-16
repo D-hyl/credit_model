@@ -113,7 +113,7 @@ def check_point(df, var, split,min_sample):
             pass
     else:
         pass
-    return new_split   
+global_bt    return new_split   
 
 
 def calulate_iv(df,var,global_bt,global_gt):
@@ -151,15 +151,13 @@ def calculate_iv_split(df,var,split_point,global_bt,global_gt):
     #split dataset
     dataset_r = df[df.loc[:,var] > split_point][[var,'target']]
     dataset_l = df[df.loc[:,var] <= split_point][[var,'target']]
-    bt_total=sum(df['target'])
-    gt_total=df.shape[0] - bt_total
     r1_cnt = sum(dataset_r['target'])
     r0_cnt = dataset_r.shape[0] - r1_cnt
     l1_cnt = sum(dataset_l['target'])
     l0_cnt = dataset_l.shape[0] - l1_cnt
     if r0_cnt == 0 or r1_cnt == 0 or l0_cnt == 0 or l1_cnt ==0:
         return 0,0,0,dataset_l,dataset_r,0,0
-    lbr = (l1_cnt+ 0.0001)*1.0/bt_total
+    lbr = (l1_cnt+ 0.0001)*1.0/
     lgr = (l0_cnt+ 0.0001)*1.0/gt_total
     woel = np.log(lbr/lgr)
     ivl = (lbr-lgr)*woel
