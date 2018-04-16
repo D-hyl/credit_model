@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='creditmodel',
+    name='credit_model',
     version=1.0,
     description=(
         'create a credit card by logistic'
