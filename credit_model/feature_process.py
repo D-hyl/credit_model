@@ -111,8 +111,9 @@ def check_point(df, var, split,min_sample):
             new_split.pop()
         else :
             pass
-    else:        pass
-global_bt    return new_split   
+    else:
+        pass
+    return new_split   
 
 
 def calulate_iv(df,var,global_bt,global_gt):
@@ -139,7 +140,8 @@ def calulate_iv(df,var,global_bt,global_gt):
     return groupdetail
 
 
-def calculate_iv_split(df,var,split_point,global_bt,global_gt):    """
+def calculate_iv_split(df,var,split_point,global_bt,global_gt):
+    """
     calculate the iv value with the specified split point
     note:
         the dataset should have variables:'target' which to be encapsulated if have time
