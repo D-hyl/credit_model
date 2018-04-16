@@ -10,7 +10,7 @@ import numpy as np
 import scipy
 import matplotlib.pyplot as plt
 from scipy.stats import ks_2samp
-import woe.config as config
+import credit_model.config as config
 import pickle
 from matplotlib.ticker import MultipleLocator,FormatStrFormatter
 from sklearn.metrics import roc_curve, auc

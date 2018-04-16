@@ -7,12 +7,12 @@ Created on Mon Apr 09 15:54:22 2018
 
 import pandas as pd
 import numpy as np
-import woe.feature_process as fp
+import credit_model.feature_process as fp
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LogisticRegression
 from datetime import datetime
 from sklearn.svm import l1_min_c
-from woe.eval import  compute_ks
+from credit_model.eval import  compute_ks
 import pickle
 import time
 

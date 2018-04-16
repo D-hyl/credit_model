@@ -6,8 +6,8 @@ Created on Sun Apr 08 15:01:08 2018
 """
 
 import numpy as np
-import woe.config as config
-import woe.eval as eval
+import credit_model.config as config
+import credit_model.eval as eval
 import copy
 import pickle
 import time
