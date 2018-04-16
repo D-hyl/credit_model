@@ -111,8 +111,7 @@ def check_point(df, var, split,min_sample):
             new_split.pop()
         else :
             pass
-    else:
-        pass
+    else:        pass
 global_bt    return new_split   
 
 
@@ -122,8 +121,7 @@ def calulate_iv(df,var,global_bt,global_gt):
     :param df:
     :param var:
     :param global_bt:
-    :param global_gt:
-    :return:
+    :param global_gt:    :return:
     '''
     # a = df.groupby(['target']).count()
     groupdetail = {}
@@ -157,12 +155,12 @@ def calculate_iv_split(df,var,split_point,global_bt,global_gt):
     l0_cnt = dataset_l.shape[0] - l1_cnt
     if r0_cnt == 0 or r1_cnt == 0 or l0_cnt == 0 or l1_cnt ==0:
         return 0,0,0,dataset_l,dataset_r,0,0
-    lbr = (l1_cnt+ 0.0001)*1.0/
-    lgr = (l0_cnt+ 0.0001)*1.0/gt_total
+    lbr = (l1_cnt+ 0.0001)*1.0/global_bt
+    lgr = (l0_cnt+ 0.0001)*1.0/global_gt
     woel = np.log(lbr/lgr)
     ivl = (lbr-lgr)*woel
-    rbr = (r1_cnt+ 0.0001)*1.0/bt_total
-    rgr = (r0_cnt+ 0.0001)*1.0/gt_total
+    rbr = (r1_cnt+ 0.0001)*1.0/global_bt
+    rgr = (r0_cnt+ 0.0001)*1.0/global_gt
     woer = np.log(rbr/rgr)
     ivr = (rbr-rgr)*woer
     iv = ivl+ivr
@@ -189,7 +187,7 @@ def binning_data_split(df,var,global_bt,global_gt,min_sample,way=3,alpha=0.01,bi
         split=[df.loc[split_descend_idx[start_idx+(i+1)*int(df.shape[0]/bin)-1],var] for i in range(bin-1)]
         split = check_point(df, var, split, min_sample)
         split.sort()
-        ivi=calculate_iv_split(df,var,split,global_bt,global_gt)
+        ivi=calculate_iv_split(df,var,split,global_bt,global_gt)d
         iv_var.split_list = split
         iv_var.iv=ivi
         return node(var_name=var,split_point=split,iv=ivi)
