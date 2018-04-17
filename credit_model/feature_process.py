@@ -127,9 +127,9 @@ def calulate_iv(df,var,global_bt,global_gt):
     # a = df.groupby(['target']).count()
     groupdetail = {}
     bt_sub = sum(df['target'])
-    bri = (bt_sub + 0.0001)* 1.0 / bt_sub
+    bri = (bt_sub + 0.0001)* 1.0 / global_bt
     gt_sub = df.shape[0] - bt_sub
-    gri = (gt_sub + 0.0001)* 1.0 / gt_sub
+    gri = (gt_sub + 0.0001)* 1.0 / global_gt
     groupdetail['woei'] = np.log(bri / gri)
     groupdetail['ivi'] = (bri - gri) * np.log(bri / gri)
     groupdetail['sub_total_num_percentage'] = df.shape[0]*1.0/(global_bt+global_gt)
@@ -140,7 +140,7 @@ def calulate_iv(df,var,global_bt,global_gt):
     return groupdetail
 
 
-def calculate_iv_split(df,var,split_point,global_bt,global_gt):
+def calculate_iv_split(df,var,split_point):
     """
     calculate the iv value with the specified split point
     note:
@@ -150,48 +150,42 @@ def calculate_iv_split(df,var,split_point,global_bt,global_gt):
     #split dataset
     dataset_r = df[df.loc[:,var] > split_point][[var,'target']]
     dataset_l = df[df.loc[:,var] <= split_point][[var,'target']]
+    bt_total=sum(df['target'])
+    gt_total=df.shape[0]-sum(df['target'])
     r1_cnt = sum(dataset_r['target'])
     r0_cnt = dataset_r.shape[0] - r1_cnt
     l1_cnt = sum(dataset_l['target'])
     l0_cnt = dataset_l.shape[0] - l1_cnt
-    if r0_cnt == 0 or r1_cnt == 0 or l0_cnt == 0 or l1_cnt ==0:
+    if r0_cnt == 0 or r1_cnt == 0 or l0_cnt == 0 or l1_cnt ==0 or bt_total == 0 or gt_total == 0:
         return 0,0,0,dataset_l,dataset_r,0,0
-    lbr = (l1_cnt+ 0.0001)*1.0/global_bt
-    lgr = (l0_cnt+ 0.0001)*1.0/global_gt
+    lbr = (l1_cnt+ 0.0001)*1.0/bt_total
+    lgr = (l0_cnt+ 0.0001)*1.0/gt_total
     woel = np.log(lbr/lgr)
     ivl = (lbr-lgr)*woel
-    rbr = (r1_cnt+ 0.0001)*1.0/global_bt
-    rgr = (r0_cnt+ 0.0001)*1.0/global_gt
+    rbr = (r1_cnt+ 0.0001)*1.0/bt_total
+    rgr = (r0_cnt+ 0.0001)*1.0/gt_total
     woer = np.log(rbr/rgr)
     ivr = (rbr-rgr)*woer
     iv = ivl+ivr
     return woel,woer,iv,dataset_l,dataset_r,ivl,ivr
 
 
-def binning_data_split(df,var,global_bt,global_gt,min_sample,way=3,alpha=0.01,bin=5):
-    iv_var = InfoValue()
-    gd = calulate_iv(df, var,global_bt,global_gt)
-    woei, ivi = gd['woei'],gd['ivi']
-    
+def binning_data_split(df,var,min_sample,iv0=0,way=3,alpha=0.01,bin=5):
+    iv_var = InfoValue()  
     if way==1:
         split = list(np.unique(np.percentile(df[var],[(i+1)*100/bin for i in range(bin-1)])))
         split.sort()
         split = check_point(df, var, split, min_sample)
         split.sort()
-        ivi=calculate_iv_split(df,var,split,global_bt,global_gt)
         iv_var.split_list = split
-        iv_var.iv=ivi
-        return node(var_name=var,split_point=split,iv=ivi)
+        return node(var_name=var,split_point=split)
     elif way==2:
-        split_descend_idx = np.argsort(df[var])
-        start_idx = 0
-        split=[df.loc[split_descend_idx[start_idx+(i+1)*int(df.shape[0]/bin)-1],var] for i in range(bin-1)]
+        split=[min(df[var])+(i+1)*(max(df[var])-min(df[var]))/bin for i in range(bin-1)]
+        split.sort()
         split = check_point(df, var, split, min_sample)
         split.sort()
-        ivi=calculate_iv_split(df,var,split,global_bt,global_gt)
         iv_var.split_list = split
-        iv_var.iv=ivi
-        return node(var_name=var,split_point=split,iv=ivi)
+        return node(var_name=var,split_point=split)
     elif way==3:
         percent_value=list(np.unique(np.percentile(df[var], range(100))))
         percent_value.sort()
@@ -206,7 +200,7 @@ def binning_data_split(df,var,global_bt,global_gt,min_sample,way=3,alpha=0.01,bi
         for point in percent_value[0:percent_value.__len__()-1]:
             if set(df[df[var] > point]['target']).__len__() == 1 or set(df[df[var] <= point]['target']).__len__() == 1 or df[df[var] > point].shape[0] < min_sample or df[df[var] <= point].shape[0] < min_sample :
                 continue
-            woel, woer, iv, dataset_l, dataset_r, ivl, ivr = calculate_iv_split(df,var,point,global_bt,global_gt)
+            woel, woer, iv, dataset_l, dataset_r, ivl, ivr = calculate_iv_split(df,var,point)
             if iv > bestSplit_iv:
                 bestSplit_woel = woel
                 bestSplit_woer = woer
@@ -216,25 +210,25 @@ def binning_data_split(df,var,global_bt,global_gt,min_sample,way=3,alpha=0.01,bi
                 bestSplit_dataset_l = dataset_l
                 bestSplit_ivl = ivl
                 bestSplit_ivr = ivr
-        if bestSplit_iv > ivi*(1+alpha) and bestSplit_dataset_r.shape[0] > min_sample and bestSplit_dataset_l.shape[0] > min_sample:
+        if bestSplit_iv > iv0*(1+alpha) and bestSplit_dataset_r.shape[0] > min_sample and bestSplit_dataset_l.shape[0] > min_sample:
             presplit_right = node()
             presplit_left = node()
             if bestSplit_dataset_r.shape[0] < min_sample or set(bestSplit_dataset_r['target']).__len__() == 1:
                 presplit_right.iv = bestSplit_ivr
                 right = presplit_right
             else:
-                right = binning_data_split(bestSplit_dataset_r,var,global_bt,global_gt,min_sample,way=3,alpha=0.01,bin=5)
+                right = binning_data_split(bestSplit_dataset_r,var,min_sample,bestSplit_ivr,way,alpha,bin)
 
 
             if bestSplit_dataset_l.shape[0] < min_sample or np.unique(bestSplit_dataset_l['target']).__len__() == 1:
                 presplit_left.iv = bestSplit_ivl
                 left = presplit_left
             else:
-                left = binning_data_split(bestSplit_dataset_l,var,global_bt,global_gt,min_sample,way=3,alpha=0.01,bin=5)
+                left = binning_data_split(bestSplit_dataset_l,var,min_sample,bestSplit_ivl,way,alpha,bin)
 
-            return node(var_name=var,split_point=bestSplit_point,iv=ivi,left=left,right=right)
+            return node(var_name=var,split_point=bestSplit_point,left=left,right=right)
         else:
-            return node(var_name=var,iv=ivi)
+            return node(var_name=var)
 
 
 
@@ -360,7 +354,7 @@ def proc_woe_discrete(df,var,global_bt,global_gt,min_sample,way,alpha,bin):
         # print(var_value,woei,ivi)
     cpvar = cpvar.map(rdict)
     df[var] = cpvar
-    iv_tree = binning_data_split(df,var,global_bt,global_gt,min_sample,way,alpha,bin)
+    iv_tree = binning_data_split(df,var,min_sample,0,way,alpha,bin)
     # Traversal tree, get the segmentation point
     split_list = []
     search(iv_tree, split_list)
@@ -401,7 +395,7 @@ def proc_woe_continuous(df,var,global_bt,global_gt,min_sample,way,alpha,bin):
     s = 'process continuous variable:'+str(var)
     print(s.center(60, '-'))
     df = df[[var,'target']]
-    iv_tree = binning_data_split(df, var,global_bt,global_gt,min_sample,way,alpha,bin)
+    iv_tree = binning_data_split(df, var,min_sample,0,way,alpha,bin)
     # Traversal tree, get the segmentation point
     split_list = []
     search(iv_tree, split_list)
@@ -491,4 +485,3 @@ def fill_na(dataset,candidate_var_list,discrete_var_list,discrete_filler='missin
             for j in range(len(dataset[var])):
                 if (dataset[var].isnull())[j]:
                     dataset[var][j]=ploy(dataset[var],j)
-                    
