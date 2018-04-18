@@ -416,9 +416,6 @@ def process_train_woe(infile_path=None,outfile_path=None,rst_path=None,config_pa
     cfg = config.config()
     cfg.load_file(config_path,data_path)
     bin_var_list = [tmp for tmp in cfg.bin_var_list if tmp in list(cfg.dataset_train.columns)]
-    for var in bin_var_list:
-        # fill null
-        cfg.dataset_train.loc[cfg.dataset_train[var].isnull(), (var)] = -1
     # change feature dtypes
     change_feature_dtype(cfg.dataset_train, cfg.variable_type)
     rst = []
@@ -431,8 +428,6 @@ def process_train_woe(infile_path=None,outfile_path=None,rst_path=None,config_pa
     # process woe transformation of discrete variables
     print('process woe transformation of discrete variables: \n',time.asctime(time.localtime(time.time())))
     for var in [tmp for tmp in cfg.discrete_var_list if tmp in list(cfg.dataset_train.columns)]:
-        # fill null
-        cfg.dataset_train.loc[cfg.dataset_train[var].isnull(), (var)] = 'missing'
         rst.append(proc_woe_discrete(cfg.dataset_train,var,cfg.global_bt,cfg.global_gt,cfg.min_sample,way,alpha,bin))
     feature_detail = eval.eval_feature_detail(rst, outfile_path)
     print('save woe transformation rule into pickle: \n',time.asctime(time.localtime(time.time())))
@@ -445,12 +440,6 @@ def process_train_woe(infile_path=None,outfile_path=None,rst_path=None,config_pa
 def process_woe_trans(in_data_path=None,rst_path=None,out_path=None,config_path=None):
     cfg = config.config()
     cfg.load_file(config_path, in_data_path)
-    for var in [tmp for tmp in cfg.bin_var_list if tmp in list(cfg.dataset_train.columns)]:
-        # fill null
-        cfg.dataset_train.loc[cfg.dataset_train[var].isnull(), (var)] = -1
-    for var in [tmp for tmp in cfg.discrete_var_list if tmp in list(cfg.dataset_train.columns)]:
-        # fill null
-        cfg.dataset_train.loc[cfg.dataset_train[var].isnull(), (var)] = 'missing'
     change_feature_dtype(cfg.dataset_train, cfg.variable_type)
     output = open(rst_path, 'rb')
     rst = pickle.load(output)
