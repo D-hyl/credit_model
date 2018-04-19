@@ -31,11 +31,6 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Topic :: Software Development :: Libraries'
     ],
-    install_requires = [
-        'pandas>=0.19.2',
-        'numpy>=1.11.3',
-        'scipy>=0.18.1',
-        'matplotlib>=2.0.0',
     ]
 
 )
