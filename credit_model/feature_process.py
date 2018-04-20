@@ -5,6 +5,7 @@ Created on Sun Apr 08 15:01:08 2018
 @author: yingliang.huang
 """
 
+
 import numpy as np
 import credit_model.config as config
 import credit_model.eval as eval
@@ -140,7 +141,7 @@ def calulate_iv(df,var,global_bt,global_gt):
     return groupdetail
 
 
-def calculate_iv_split(df,var,split_point):
+def calculate_iv_split(df,var,split_point,global_bt,global_gt):
     """
     calculate the iv value with the specified split point
     note:
@@ -150,27 +151,25 @@ def calculate_iv_split(df,var,split_point):
     #split dataset
     dataset_r = df[df.loc[:,var] > split_point][[var,'target']]
     dataset_l = df[df.loc[:,var] <= split_point][[var,'target']]
-    bt_total=sum(df['target'])
-    gt_total=df.shape[0]-sum(df['target'])
     r1_cnt = sum(dataset_r['target'])
     r0_cnt = dataset_r.shape[0] - r1_cnt
     l1_cnt = sum(dataset_l['target'])
     l0_cnt = dataset_l.shape[0] - l1_cnt
     if r0_cnt == 0 or r1_cnt == 0 or l0_cnt == 0 or l1_cnt ==0 or bt_total == 0 or gt_total == 0:
         return 0,0,0,dataset_l,dataset_r,0,0
-    lbr = (l1_cnt+ 0.0001)*1.0/bt_total
-    lgr = (l0_cnt+ 0.0001)*1.0/gt_total
+    lbr = (l1_cnt+ 0.0001)*1.0/global_bt
+    lgr = (l0_cnt+ 0.0001)*1.0/global_gt
     woel = np.log(lbr/lgr)
     ivl = (lbr-lgr)*woel
-    rbr = (r1_cnt+ 0.0001)*1.0/bt_total
-    rgr = (r0_cnt+ 0.0001)*1.0/gt_total
+    rbr = (r1_cnt+ 0.0001)*1.0/global_bt
+    rgr = (r0_cnt+ 0.0001)*1.0/global_gt
     woer = np.log(rbr/rgr)
     ivr = (rbr-rgr)*woer
     iv = ivl+ivr
     return woel,woer,iv,dataset_l,dataset_r,ivl,ivr
 
 
-def binning_data_split(df,var,min_sample,iv0=0,way=3,alpha=0.01,bin=5):
+def binning_data_split(df,var,min_sample,global_bt,global_gt,iv0=0,way=3,alpha=0.01,bin=5):
     iv_var = InfoValue()  
     if way==1:
         split = list(np.unique(np.percentile(df[var],[(i+1)*100/bin for i in range(bin-1)])))
@@ -200,7 +199,7 @@ def binning_data_split(df,var,min_sample,iv0=0,way=3,alpha=0.01,bin=5):
         for point in percent_value[0:percent_value.__len__()-1]:
             if set(df[df[var] > point]['target']).__len__() == 1 or set(df[df[var] <= point]['target']).__len__() == 1 or df[df[var] > point].shape[0] < min_sample or df[df[var] <= point].shape[0] < min_sample :
                 continue
-            woel, woer, iv, dataset_l, dataset_r, ivl, ivr = calculate_iv_split(df,var,point)
+            woel, woer, iv, dataset_l, dataset_r, ivl, ivr = calculate_iv_split(df,var,point,global_bt,global_gt)
             if iv > bestSplit_iv:
                 bestSplit_woel = woel
                 bestSplit_woer = woer
@@ -217,14 +216,14 @@ def binning_data_split(df,var,min_sample,iv0=0,way=3,alpha=0.01,bin=5):
                 presplit_right.iv = bestSplit_ivr
                 right = presplit_right
             else:
-                right = binning_data_split(bestSplit_dataset_r,var,min_sample,bestSplit_ivr,way,alpha,bin)
+                right = binning_data_split(bestSplit_dataset_r,var,min_sample,global_bt,global_gt,bestSplit_ivr,way,alpha,bin)
 
 
             if bestSplit_dataset_l.shape[0] < min_sample or np.unique(bestSplit_dataset_l['target']).__len__() == 1:
                 presplit_left.iv = bestSplit_ivl
                 left = presplit_left
             else:
-                left = binning_data_split(bestSplit_dataset_l,var,min_sample,bestSplit_ivl,way,alpha,bin)
+                left = binning_data_split(bestSplit_dataset_l,var,min_sample,global_bt,global_gt,bestSplit_ivl,way,alpha,bin)
 
             return node(var_name=var,split_point=bestSplit_point,left=left,right=right)
         else:
@@ -354,7 +353,7 @@ def proc_woe_discrete(df,var,global_bt,global_gt,min_sample,way,alpha,bin):
         # print(var_value,woei,ivi)
     cpvar = cpvar.map(rdict)
     df[var] = cpvar
-    iv_tree = binning_data_split(df,var,min_sample,0,way,alpha,bin)
+    iv_tree = binning_data_split(df,var,min_sample,global_bt,global_gt,0,way,alpha,bin)
     # Traversal tree, get the segmentation point
     split_list = []
     search(iv_tree, split_list)
@@ -395,7 +394,7 @@ def proc_woe_continuous(df,var,global_bt,global_gt,min_sample,way,alpha,bin):
     s = 'process continuous variable:'+str(var)
     print(s.center(60, '-'))
     df = df[[var,'target']]
-    iv_tree = binning_data_split(df, var,min_sample,0,way,alpha,bin)
+    iv_tree = binning_data_split(df, var,min_sample,global_bt,global_gt,0,way,alpha,bin)
     # Traversal tree, get the segmentation point
     split_list = []
     search(iv_tree, split_list)
