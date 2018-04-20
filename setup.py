@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='credit_model',
-    version='1.3',
+    version='1.4',
     description=(
         'create a credit card by logistic'
     ),
