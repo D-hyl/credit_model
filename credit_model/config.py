@@ -35,7 +35,7 @@ class config:
         if data_path:
             data_path = data_path if isinstance(data_path, str) else None
             # load dataset train
-            self.dataset_train = pd.read_csv(data_path)
+            self.dataset_train = pd.read_csv(data_path,encoding='gbk')
             self.dataset_train.columns = [col.split('.')[-1] for col in self.dataset_train.columns]
             # specify some other global variables about the training dataset
             self.dataset_len = len(self.dataset_train)
