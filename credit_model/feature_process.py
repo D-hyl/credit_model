@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 """
+Created on Sat Apr 28 17:44:08 2018
+
+@author: yingliang.huang
+"""
+
+# -*- coding: utf-8 -*-
+"""
 Created on Sun Apr 08 15:01:08 2018
 
 @author: yingliang.huang
@@ -473,3 +480,4 @@ def fill_na(dataset,candidate_var_list,discrete_var_list,discrete_filler='missin
             for j in range(len(dataset[var])):
                 if (dataset[var].isnull())[j]:
                     dataset[var][j]=ploy(dataset[var],j)
+
