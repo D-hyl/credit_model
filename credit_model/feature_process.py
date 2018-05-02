@@ -1,12 +1,3 @@
-# -*- coding: utf-8 -*-
-
-# -*- coding: utf-8 -*-
-"""
-Created on Wed May  2 09:37:38 2018
-
-@author: yingliang.huang
-"""
-
 import numpy as np
 import credit_model.config as config
 import credit_model.eval as eval
@@ -292,7 +283,8 @@ def format_iv_split(df,var,split_list,global_bt,global_gt):
         civ.sub_total_sample_num.append(dfcp.shape[0])
         civ.positive_sample_num.append(gd['positive_sample_num'])
         civ.negative_sample_num.append(gd['negative_sample_num'])
-        civ.sub_total_num_percentage.append(gd['sub_total_num_percentage'])        civ.positive_rate_in_sub_total.append(gd['positive_rate_in_sub_total'])
+        civ.sub_total_num_percentage.append(gd['sub_total_num_percentage'])        
+        civ.positive_rate_in_sub_total.append(gd['positive_rate_in_sub_total'])
         civ.negative_rate_in_sub_total.append(gd['negative_rate_in_sub_total'])
     civ.iv = sum(civ.iv_list)
     return civ
