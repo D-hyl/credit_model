@@ -311,6 +311,7 @@ def woe_trans(dvar,civ):
         for i in range(civ.split_list.__len__()):
             for j in range(civ.split_list[i].__len__()):
                 split_map[civ.split_list[i][j]] = civ.woe_list[i]
+        var = var.astype('str')
         var = var.map(split_map)
     return var
 
