@@ -410,6 +410,7 @@ def proc_woe_continuous(df,var,global_bt,global_gt,min_sample,way,alpha,bin):
 
 
 ##########################添加最优分组和等频、等宽的选择参数
+
 def process_train_woe(infile_path=None,outfile_path=None,rst_path=None,config_path=None,way=3,alpha=0.05,bin=5):
     print('run into process_train_woe: \n',time.asctime(time.localtime(time.time())))
     data_path = infile_path
@@ -428,7 +429,7 @@ def process_train_woe(infile_path=None,outfile_path=None,rst_path=None,config_pa
     # process woe transformation of discrete variables
     print('process woe transformation of discrete variables: \n',time.asctime(time.localtime(time.time())))
     for var in [tmp for tmp in cfg.discrete_var_list if tmp in list(cfg.dataset_train.columns)]:
-        cfg.dataset_train.loc[cfg.dataset_train[var].isnull(), (var)] = 'missing'
+        cfg.dataset_train[var]=cfg.dataset_train[var].astype('str')
         rst.append(proc_woe_discrete(cfg.dataset_train,var,cfg.global_bt,cfg.global_gt,cfg.min_sample,way,alpha,bin))
     feature_detail = eval.eval_feature_detail(rst, outfile_path)
     print('save woe transformation rule into pickle: \n',time.asctime(time.localtime(time.time())))
@@ -436,7 +437,6 @@ def process_train_woe(infile_path=None,outfile_path=None,rst_path=None,config_pa
     pickle.dump(rst,output)
     output.close()
     return feature_detail,rst
-
 #########################################转之前要对数据做缺失值等数据处理
 def process_woe_trans(in_data_path=None,rst_path=None,out_path=None,config_path=None):
     cfg = config.config()
