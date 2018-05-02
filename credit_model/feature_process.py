@@ -292,8 +292,7 @@ def format_iv_split(df,var,split_list,global_bt,global_gt):
         civ.sub_total_sample_num.append(dfcp.shape[0])
         civ.positive_sample_num.append(gd['positive_sample_num'])
         civ.negative_sample_num.append(gd['negative_sample_num'])
-        civ.sub_total_num_percentage.append(gd['sub_total_num_percentage'])
-        civ.positive_rate_in_sub_total.append(gd['positive_rate_in_sub_total'])
+        civ.sub_total_num_percentage.append(gd['sub_total_num_percentage'])        civ.positive_rate_in_sub_total.append(gd['positive_rate_in_sub_total'])
         civ.negative_rate_in_sub_total.append(gd['negative_rate_in_sub_total'])
     civ.iv = sum(civ.iv_list)
     return civ
@@ -335,7 +334,7 @@ def proc_woe_discrete(df,var,global_bt,global_gt,min_sample,way,alpha,bin):
     :param min_sample:
     :return:
     '''
-    s = 'process discrete variable:'+str(var)
+    s = 'process discrete variable:'+var
     print(s.center(60, '-'))
     df = df[[var,'target']]
     div = DisInfoValue()
@@ -392,7 +391,7 @@ def proc_woe_continuous(df,var,global_bt,global_gt,min_sample,way,alpha,bin):
     :param min_sample:
     :return:
     '''
-    s = 'process continuous variable:'+str(var)
+    s = 'process continuous variable:'+var
     print(s.center(60, '-'))
     df = df[[var,'target']]
     iv_tree = binning_data_split(df, var,min_sample,global_bt,global_gt,0,way,alpha,bin)
