@@ -1,17 +1,11 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Sat Apr 28 17:44:08 2018
-
-@author: yingliang.huang
-"""
 
 # -*- coding: utf-8 -*-
 """
-Created on Sun Apr 08 15:01:08 2018
+Created on Wed May  2 09:37:38 2018
 
 @author: yingliang.huang
 """
-
 
 import numpy as np
 import credit_model.config as config
@@ -434,6 +428,7 @@ def process_train_woe(infile_path=None,outfile_path=None,rst_path=None,config_pa
     # process woe transformation of discrete variables
     print('process woe transformation of discrete variables: \n',time.asctime(time.localtime(time.time())))
     for var in [tmp for tmp in cfg.discrete_var_list if tmp in list(cfg.dataset_train.columns)]:
+        cfg.dataset_train.loc[cfg.dataset_train[var].isnull(), (var)] = 'missing'
         rst.append(proc_woe_discrete(cfg.dataset_train,var,cfg.global_bt,cfg.global_gt,cfg.min_sample,way,alpha,bin))
     feature_detail = eval.eval_feature_detail(rst, outfile_path)
     print('save woe transformation rule into pickle: \n',time.asctime(time.localtime(time.time())))
@@ -480,4 +475,3 @@ def fill_na(dataset,candidate_var_list,discrete_var_list,discrete_filler='missin
             for j in range(len(dataset[var])):
                 if (dataset[var].isnull())[j]:
                     dataset[var][j]=ploy(dataset[var],j)
-
