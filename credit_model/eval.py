@@ -413,7 +413,7 @@ def plot_ks(target,proba,axistype='pct',out_path=False):
         sx = np.linspace(0,1,10)
         sy = sx
         plt.plot(sx,sy,linestyle='--',color='darkgrey',linewidth=1.2)
-        plt.legend()
+        plt.legend(loc='NorthWest')
         plt.grid(True)
         ymin, ymax = plt.ylim()
         plt.xlabel('Sample percent')
